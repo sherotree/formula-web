@@ -7,6 +7,11 @@ export interface Formula {
   grade: string;
   textbook?: string;
   tags: string[];
+  explanation?: {
+    steps?: string[];
+    image?: string;
+    notes?: string;
+  };
 }
 
 export interface Subject {
