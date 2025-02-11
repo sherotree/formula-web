@@ -1,6 +1,7 @@
 {
   "name": "formula-web",
   "version": "0.1.0",
+  "homepage": "https://sherotree.github.io/formula-web",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -25,7 +26,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +52,7 @@
     "@types/katex": "^0.16.7",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "@types/react-katex": "^3.0.4"
+    "@types/react-katex": "^3.0.4",
+    "gh-pages": "^6.3.0"
   }
 }
