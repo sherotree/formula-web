@@ -17,11 +17,14 @@ export interface Formula {
 export interface Subject {
   id: string;
   name: string;
-  grades: string[];
+  grades: string[]; // 适用的年级
+  level: string[]; // 适用的学段
 }
 
 export interface Grade {
   id: string;
   name: string;
-  subjects: string[];
+  displayName: string; // 显示名称，如"一年级"
+  level: string; // 所属学段，如"小学"
+  order: number; // 用于排序
 }
