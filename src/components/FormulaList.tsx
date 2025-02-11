@@ -14,18 +14,26 @@ interface FormulaListProps {
 }
 
 const FormulaList: React.FC<FormulaListProps> = ({ formulas }) => {
-  const [level, setLevel] = useState(LEVEL_IDS.PRIMARY);
+  const [level, setLevel] = useState(LEVEL_IDS.ALL);
   const [grade, setGrade] = useState(GRADE_IDS.ALL);
   const [subject, setSubject] = useState(SUBJECT_IDS.ALL);
   const [searchText, setSearchText] = useState('');
 
   // 根据当前学段筛选年级
-  const filteredGrades = grades.filter((g) => g.level === level);
+  const filteredGrades =
+    level === LEVEL_IDS.ALL ? grades : grades.filter((g) => g.level === level);
+
   // 根据当前学段筛选科目
-  const filteredSubjects = subjects.filter((s) => s.level.includes(level));
+  const filteredSubjects =
+    level === LEVEL_IDS.ALL
+      ? subjects
+      : subjects.filter((s) => s.level.includes(level));
 
   // 筛选公式
   const filteredFormulas = formulas.filter((formula) => {
+    if (level === LEVEL_IDS.ALL) {
+      return true; // 显示所有公式
+    }
     const gradeObj = grades.find((g) => g.id === formula.grade);
     const levelMatch = gradeObj?.level === level;
     const gradeMatch = grade === GRADE_IDS.ALL || formula.grade === grade;

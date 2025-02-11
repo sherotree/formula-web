@@ -6,6 +6,7 @@ export const SUBJECT_IDS = {
 } as const;
 
 export const LEVEL_IDS = {
+  ALL: 'all',
   PRIMARY: 'primary',
   JUNIOR: 'junior',
   SENIOR: 'senior',
