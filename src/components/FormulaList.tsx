@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, Tabs, Row, Col } from 'antd';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Formula } from '../types';
 import FormulaCard from './FormulaCard';
-// import { levels, grades, subjects } from '../data/formulas/index';
 import { levels } from '../data/formulas/levels';
 import { grades } from '../data/formulas/grades';
 import { subjects } from '../data/formulas/subjects';
@@ -13,9 +13,17 @@ const { Search } = Input;
 
 interface FormulaListProps {
   formulas: Formula[];
+  favorites: string[];
+  onToggleFavorite: (id: string) => void;
 }
 
-const FormulaList: React.FC<FormulaListProps> = ({ formulas }) => {
+const FormulaList: React.FC<FormulaListProps> = ({
+  formulas: initialFormulas,
+  favorites: initialFavorites,
+  onToggleFavorite,
+}) => {
+  const [formulas, setFormulas] = useState(initialFormulas);
+  const [favorites, setFavorites] = useState<string[]>(initialFavorites);
   const [level, setLevel] = useState(LEVEL_IDS.ALL);
   const [grade, setGrade] = useState(GRADE_IDS.ALL);
   const [subject, setSubject] = useState(SUBJECT_IDS.ALL);
@@ -52,6 +60,39 @@ const FormulaList: React.FC<FormulaListProps> = ({ formulas }) => {
 
   // 搜索过滤
   const searchedFormulas = searchFormulas(filteredFormulas, searchText);
+
+  useEffect(() => {
+    localStorage.setItem('favoriteFormulas', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const handleToggleFavorite = (id: string) => {
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
+    );
+  };
+
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
+
+    const items = Array.from(searchedFormulas);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setFormulas((prev) => {
+      const newFormulas = [...prev];
+      const sourceIdx = newFormulas.findIndex((f) => f.id === reorderedItem.id);
+      const targetIdx = newFormulas.findIndex(
+        (f) => f.id === items[result.destination.index].id
+      );
+
+      [newFormulas[sourceIdx], newFormulas[targetIdx]] = [
+        newFormulas[targetIdx],
+        newFormulas[sourceIdx],
+      ];
+
+      return newFormulas;
+    });
+  };
 
   return (
     <div>
@@ -97,13 +138,44 @@ const FormulaList: React.FC<FormulaListProps> = ({ formulas }) => {
         ]}
       />
 
-      <Row gutter={[16, 16]}>
-        {searchedFormulas.map((formula) => (
-          <Col xs={24} sm={12} md={8} key={formula.id}>
-            <FormulaCard formula={formula} />
-          </Col>
-        ))}
-      </Row>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId='formulas'>
+          {(provided) => (
+            <Row
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              gutter={[16, 16]}
+            >
+              {searchedFormulas.map((formula, index) => (
+                <Draggable
+                  key={formula.id}
+                  draggableId={formula.id}
+                  index={index}
+                >
+                  {(provided, snapshot) => (
+                    <Col
+                      xs={24}
+                      sm={12}
+                      md={8}
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <FormulaCard
+                        formula={formula}
+                        isFavorite={favorites.includes(formula.id)}
+                        onToggleFavorite={handleToggleFavorite}
+                        isDragging={snapshot.isDragging}
+                      />
+                    </Col>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </Row>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 };

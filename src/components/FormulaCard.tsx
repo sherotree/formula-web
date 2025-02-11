@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Tag, Typography } from 'antd';
+import { StarOutlined, StarFilled } from '@ant-design/icons';
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
 import { Formula } from '../types';
@@ -10,14 +11,27 @@ import {
 } from '../data/formulas/utils';
 import type { GradeId } from '../data/formulas/types';
 
-const { Text, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 interface FormulaCardProps {
   formula: Formula;
+  isFavorite: boolean;
+  onToggleFavorite: (id: string) => void;
+  isDragging?: boolean;
 }
 
-const FormulaCard: React.FC<FormulaCardProps> = ({ formula }) => {
+const FormulaCard: React.FC<FormulaCardProps> = ({
+  formula,
+  isFavorite,
+  onToggleFavorite,
+  isDragging,
+}) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleFavorite(formula.id);
+  };
 
   return (
     <>
@@ -25,7 +39,19 @@ const FormulaCard: React.FC<FormulaCardProps> = ({ formula }) => {
         title={formula.name}
         hoverable
         onClick={() => setDialogOpen(true)}
-        style={{ height: '100%' }}
+        style={{
+          height: '100%',
+          opacity: isDragging ? 0.5 : 1,
+        }}
+        extra={
+          <div onClick={handleFavoriteClick} style={{ cursor: 'pointer' }}>
+            {isFavorite ? (
+              <StarFilled style={{ color: '#fadb14' }} />
+            ) : (
+              <StarOutlined />
+            )}
+          </div>
+        }
       >
         <div style={{ textAlign: 'center', margin: '16px 0' }}>
           <InlineMath math={formula.latex} />
