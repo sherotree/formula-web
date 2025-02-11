@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Tabs, Tab, Box, TextField } from '@mui/material';
+import { Input, Tabs, Row, Col } from 'antd';
 import { Formula } from '../types';
 import FormulaCard from './FormulaCard';
 // import { levels, grades, subjects } from '../data/formulas/index';
@@ -8,6 +8,8 @@ import { grades } from '../data/formulas/grades';
 import { subjects } from '../data/formulas/subjects';
 import { LEVEL_IDS, GRADE_IDS, SUBJECT_IDS } from '../data/formulas/constants';
 import { searchFormulas } from '../data/formulas/utils';
+
+const { Search } = Input;
 
 interface FormulaListProps {
   formulas: Formula[];
@@ -32,8 +34,14 @@ const FormulaList: React.FC<FormulaListProps> = ({ formulas }) => {
   // 筛选公式
   const filteredFormulas = formulas.filter((formula) => {
     if (level === LEVEL_IDS.ALL) {
-      return true; // 显示所有公式
+      // 在全部学段时，只按年级和科目筛选
+      const gradeMatch = grade === GRADE_IDS.ALL || formula.grade === grade;
+      const subjectMatch =
+        subject === SUBJECT_IDS.ALL || formula.subject === subject;
+      return gradeMatch && subjectMatch;
     }
+
+    // 在特定学段时的筛选逻辑
     const gradeObj = grades.find((g) => g.id === formula.grade);
     const levelMatch = gradeObj?.level === level;
     const gradeMatch = grade === GRADE_IDS.ALL || formula.grade === grade;
@@ -46,65 +54,57 @@ const FormulaList: React.FC<FormulaListProps> = ({ formulas }) => {
   const searchedFormulas = searchFormulas(filteredFormulas, searchText);
 
   return (
-    <Box>
-      {/* 搜索框 */}
-      <TextField
-        fullWidth
-        variant='outlined'
+    <div>
+      <Search
         placeholder='搜索公式名称、描述、标签...'
-        value={searchText}
+        allowClear
         onChange={(e) => setSearchText(e.target.value)}
-        sx={{ mb: 2 }}
+        style={{ marginBottom: 16 }}
       />
 
-      {/* 学段选择 */}
       <Tabs
-        value={level}
-        onChange={(_, value) => {
-          setLevel(value);
-          setGrade('all');
-          setSubject('all');
+        activeKey={level}
+        onChange={(value) => {
+          setLevel(value as any);
+          setGrade(GRADE_IDS.ALL);
+          setSubject(SUBJECT_IDS.ALL);
         }}
-        sx={{ mb: 2 }}
-      >
-        {levels.map((l) => (
-          <Tab key={l.id} label={l.name} value={l.id} />
-        ))}
-      </Tabs>
+        items={levels.map((l) => ({ key: l.id, label: l.name }))}
+      />
 
-      {/* 年级选择 */}
       <Tabs
-        value={grade}
-        onChange={(_, value) => setGrade(value)}
-        sx={{ mb: 2 }}
-      >
-        <Tab label='全部' value='all' />
-        {filteredGrades.map((g) => (
-          <Tab key={g.id} label={g.displayName} value={g.id} />
-        ))}
-      </Tabs>
+        activeKey={grade}
+        onChange={(value) => setGrade(value as any)}
+        items={[
+          { key: GRADE_IDS.ALL, label: '全部' },
+          ...filteredGrades.map((g) => ({
+            key: g.id,
+            label: g.displayName,
+          })),
+        ]}
+      />
 
-      {/* 科目选择 */}
       <Tabs
-        value={subject}
-        onChange={(_, value) => setSubject(value)}
-        sx={{ mb: 3 }}
-      >
-        <Tab label='全部' value='all' />
-        {filteredSubjects.map((s) => (
-          <Tab key={s.id} label={s.name} value={s.id} />
-        ))}
-      </Tabs>
+        activeKey={subject}
+        onChange={(value) => setSubject(value as any)}
+        style={{ marginBottom: 24 }}
+        items={[
+          { key: SUBJECT_IDS.ALL, label: '全部' },
+          ...filteredSubjects.map((s) => ({
+            key: s.id,
+            label: s.name,
+          })),
+        ]}
+      />
 
-      {/* 公式列表 */}
-      <Grid container spacing={3}>
+      <Row gutter={[16, 16]}>
         {searchedFormulas.map((formula) => (
-          <Grid item xs={12} sm={6} md={4} key={formula.id}>
+          <Col xs={24} sm={12} md={8} key={formula.id}>
             <FormulaCard formula={formula} />
-          </Grid>
+          </Col>
         ))}
-      </Grid>
-    </Box>
+      </Row>
+    </div>
   );
 };
 

@@ -2,6 +2,33 @@ import type { Formula } from '../../types';
 import type { GradeId, SubjectId, Tag } from './types';
 import { grades } from './grades';
 import { subjects } from './subjects';
+import { GRADE_IDS } from './constants';
+import { SUBJECT_IDS } from './constants';
+
+// 科目中文名映射
+const SUBJECT_NAMES = {
+  [SUBJECT_IDS.MATH]: '数学',
+  [SUBJECT_IDS.PHYSICS]: '物理',
+  [SUBJECT_IDS.CHEMISTRY]: '化学',
+  [SUBJECT_IDS.ALL]: '全部',
+} as const;
+
+// 年级中文名映射
+const GRADE_NAMES = {
+  [GRADE_IDS.ALL]: '全部',
+  [GRADE_IDS.P1]: '一年级',
+  [GRADE_IDS.P2]: '二年级',
+  [GRADE_IDS.P3]: '三年级',
+  [GRADE_IDS.P4]: '四年级',
+  [GRADE_IDS.P5]: '五年级',
+  [GRADE_IDS.P6]: '六年级',
+  [GRADE_IDS.J1]: '初一',
+  [GRADE_IDS.J2]: '初二',
+  [GRADE_IDS.J3]: '初三',
+  [GRADE_IDS.S1]: '高一',
+  [GRADE_IDS.S2]: '高二',
+  [GRADE_IDS.S3]: '高三',
+} as const;
 
 export const isGradeInLevel = (gradeId: GradeId, levelId: string): boolean => {
   const grade = grades.find((g) => g.id === gradeId);
@@ -13,9 +40,12 @@ export const getSubjectName = (subjectId: SubjectId): string => {
   return subject?.name || '';
 };
 
+export const getSubjectDisplayName = (subjectId: SubjectId): string => {
+  return SUBJECT_NAMES[subjectId] || subjectId;
+};
+
 export const getGradeDisplayName = (gradeId: GradeId): string => {
-  const grade = grades.find((g) => g.id === gradeId);
-  return grade?.displayName || '';
+  return GRADE_NAMES[gradeId] || gradeId;
 };
 
 export const groupFormulasByTag = (

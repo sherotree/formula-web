@@ -1,25 +1,16 @@
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 import Layout from './components/Layout';
 import FormulaList from './components/FormulaList';
 import { formulas } from './data/formulas';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-  },
-});
-
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <ConfigProvider locale={zhCN}>
       <Layout>
         <FormulaList formulas={formulas} />
       </Layout>
-    </ThemeProvider>
+    </ConfigProvider>
   );
 }
 

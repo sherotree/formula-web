@@ -1,12 +1,7 @@
 import React from 'react';
-import {
-  Box,
-  Container,
-  AppBar,
-  Toolbar,
-  Typography,
-  TextField,
-} from '@mui/material';
+import { Layout as AntLayout } from 'antd';
+
+const { Header, Content } = AntLayout;
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,25 +9,14 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position='static'>
-        <Toolbar>
-          <Typography variant='h6' sx={{ flexGrow: 1 }}>
-            公式大全
-          </Typography>
-          <TextField
-            size='small'
-            placeholder='搜索公式...'
-            sx={{
-              backgroundColor: 'white',
-              borderRadius: 1,
-              width: 200,
-            }}
-          />
-        </Toolbar>
-      </AppBar>
-      <Container sx={{ mt: 3 }}>{children}</Container>
-    </Box>
+    <AntLayout>
+      <Header style={{ background: '#fff', padding: '0 24px' }}>
+        <h1 style={{ margin: 0 }}>公式大全</h1>
+      </Header>
+      <Content style={{ padding: '24px', minHeight: 'calc(100vh - 64px)' }}>
+        {children}
+      </Content>
+    </AntLayout>
   );
 };
 

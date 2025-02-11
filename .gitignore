@@ -24,8 +24,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # lock files
-pnpm-lock.yaml
-package-lock.json
+/pnpm-lock.yaml
+/package-lock.json
 
 # IDE
 .idea/

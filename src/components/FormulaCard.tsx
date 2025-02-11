@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, Chip, Box } from '@mui/material';
+import { Card, Tag, Typography } from 'antd';
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
 import { Formula } from '../types';
 import FormulaDialog from './FormulaDialog';
+import {
+  getSubjectDisplayName,
+  getGradeDisplayName,
+} from '../data/formulas/utils';
+import type { GradeId } from '../data/formulas/types';
+
+const { Text, Paragraph } = Typography;
 
 interface FormulaCardProps {
   formula: Formula;
@@ -15,30 +22,22 @@ const FormulaCard: React.FC<FormulaCardProps> = ({ formula }) => {
   return (
     <>
       <Card
-        sx={{
-          cursor: 'pointer',
-          '&:hover': { boxShadow: 6 },
-        }}
+        title={formula.name}
+        hoverable
         onClick={() => setDialogOpen(true)}
+        style={{ height: '100%' }}
       >
-        <CardContent>
-          <Typography variant='h6' gutterBottom>
-            {formula.name}
-          </Typography>
-          <Box sx={{ my: 2, textAlign: 'center' }}>
-            <InlineMath math={formula.latex} />
-          </Box>
-          <Typography variant='body2' color='text.secondary' paragraph>
-            {formula.description}
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            <Chip label={formula.subject} size='small' color='primary' />
-            <Chip label={formula.grade} size='small' />
-            {formula.tags.map((tag) => (
-              <Chip key={tag} label={tag} size='small' variant='outlined' />
-            ))}
-          </Box>
-        </CardContent>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}>
+          <InlineMath math={formula.latex} />
+        </div>
+        <Paragraph>{formula.description}</Paragraph>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Tag color='blue'>{getSubjectDisplayName(formula.subject)}</Tag>
+          <Tag>{getGradeDisplayName(formula.grade as GradeId)}</Tag>
+          {formula.tags.map((tag) => (
+            <Tag key={tag}>{tag}</Tag>
+          ))}
+        </div>
       </Card>
 
       <FormulaDialog
